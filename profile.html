@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой профиль — MovieTracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css"> </head>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo" onclick="window.location.href='index.html'">
+                MOVIE<span class="dot">.</span>TR
+            </div>
+            <h2>Редактировать профиль</h2>
+            
+            <form id="edit-profile-form">
+                <div class="profile-avatar-section">
+                    <i class="fas fa-user-circle fa-4x"></i>
+                </div>
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-align: left;">Имя пользователя</label>
+                <input type="text" id="edit-username" placeholder="Имя" required>
+                
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-align: left;">Email</label>
+                <input type="email" id="edit-email" placeholder="Email" required>
+                
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-align: left;">Новый пароль</label>
+                <input type="password" id="edit-password" placeholder="Оставьте пустым, если не хотите менять">
+                
+                <button type="submit" class="auth-btn">Сохранить изменения</button>
+            </form>
+            
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> На главную</a>
+        </div>
+    </div>
+
+    <script>
+        // Заполняем поля текущими данными при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedUser = JSON.parse(localStorage.getItem('user'));
+            if (savedUser) {
+                document.getElementById('edit-username').value = savedUser.username;
+                document.getElementById('edit-email').value = savedUser.email;
+            } else {
+                window.location.href = 'auth.html'; // Если не залогинен, выкидываем
+            }
+        });
+
+        // Сохранение изменений
+        document.getElementById('edit-profile-form').onsubmit = function(e) {
+            e.preventDefault();
+            const username = document.getElementById('edit-username').value;
+            const email = document.getElementById('edit-email').value;
+            const password = document.getElementById('edit-password').value;
+
+            const savedUser = JSON.parse(localStorage.getItem('user'));
+            
+            // Обновляем данные (если пароль пустой, оставляем старый)
+            const updatedUser = {
+                username: username,
+                email: email,
+                password: password || savedUser.password
+            };
+
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            alert('Профиль успешно обновлен!');
+            window.location.href = 'index.html';
+        };
+    </script>
+</body>
+</html>

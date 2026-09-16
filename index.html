@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieTracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="main-header">
+        <div class="header-content">
+            <div class="nav-left">
+                <div class="logo-wrapper" onclick="showCatalog()">
+                    <svg viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg" class="main-logo-svg">
+                        <g transform="translate(10, 20)">
+                            <rect x="0" y="0" width="4" height="40" rx="2" fill="#ffffff"/>
+                            <rect x="10" y="5" width="4" height="30" rx="2" fill="#ffffff" opacity="0.6"/>
+                            <rect x="20" y="0" width="4" height="40" rx="2" fill="#e50914"/> 
+                            <rect x="30" y="5" width="4" height="30" rx="2" fill="#ffffff" opacity="0.6"/>
+                            <rect x="40" y="0" width="4" height="40" rx="2" fill="#ffffff"/>
+                        </g>
+                        <text x="60" y="48" font-family="Inter, sans-serif" font-weight="800" font-size="32" fill="#ffffff">MOVIE<tspan fill="#e50914">.</tspan>TR</text>
+                    </svg>
+                </div>
+                <nav class="main-nav">
+                    <a href="#" class="active" onclick="showCatalog()">Главная</a>
+                    <a href="#" onclick="scrollToSection('favorites-section')">Избранное</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="movie-input" placeholder="Поиск фильмов...">
+                    <div id="search-results" class="search-dropdown"></div>
+                </div>
+                <!-- Контейнер для кнопок входа / профиля -->
+                <div class="auth-buttons" id="auth-buttons-container">
+                    <button class="btn-login" onclick="window.location.href='auth.html'">Войти</button>
+                    <button class="btn-signup" onclick="window.location.href='auth.html'">Регистрация</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="movie-details-page" class="details-container" style="display: none;">
+        <button class="back-btn" onclick="showCatalog()"><i class="fas fa-arrow-left"></i> Назад</button>
+        
+        <div class="details-content">
+            <img id="movie-img" src="" alt="Постер">
+            <div class="details-info">
+                <h1 id="details-title"></h1>
+                <div class="details-meta">
+                    <span id="details-rating"></span>
+                    <span id="details-date"></span>
+                </div>
+                <p id="details-desc"></p>
+                
+                <div class="details-actions">
+                    <button id="details-watch-btn" class="watch-btn">
+                        <i class="fas fa-play"></i> Смотреть трейлер
+                    </button>
+                    <button id="details-fav-btn" class="fav-btn">
+                        <i class="far fa-heart"></i> <span id="fav-btn-text">В избранное</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cast-section-bottom">
+            <h3 class="cast-title">Актерский состав</h3>
+            <div class="cast-slider-wrapper">
+                <div id="cast-container" class="cast-slider"></div>
+            </div>
+        </div>
+        
+        <!-- Секция похожих фильмов -->
+        <div class="similar-section-bottom" style="display: none; margin-top: 50px;">
+            <h3 class="cast-title">С этим фильмом также смотрят</h3>
+            <div class="movie-row" id="similar-movies-row"></div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="hero-section">
+            <div class="hero-overlay"></div>
+            <div class="hero-inner">
+                <div class="info">
+                    <h1 id="movie-title">Загрузка...</h1>
+                    <p id="movie-desc">Подождите, мы ищем для вас лучшие фильмы...</p>
+                    <div class="actions">
+                        <button class="watch-btn" id="hero-watch-btn"><i class="fas fa-play"></i> Смотреть трейлер</button>
+                        <span id="movie-rating" style="margin-left: 15px; font-weight: bold; color: #46d369;">⭐ 0.0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="catalog-section" class="catalog-container">
+            <!-- Аккуратный блок жанров внутри каталога -->
+            <div class="genre-section">
+                <div class="genre-filters" id="genre-filters">
+                    <!-- Сюда подгрузятся жанры -->
+                </div>
+            </div>
+
+            <!-- Избранное (показывается только авторизованным пользователям, если есть фильмы) -->
+            <div class="movie-row-wrapper" id="favorites-section" style="display: none;">
+                <h3 class="row-title" style="border-color: #ff0055;">Мое Избранное</h3>
+                <div class="movie-row" id="favorites-row"></div>
+            </div>
+
+            <!-- Результаты фильтра по жанрам -->
+            <div class="movie-row-wrapper" id="genre-results-section" style="display: none;">
+                <h3 class="row-title" id="genre-results-title">Результаты</h3>
+                <div class="movie-row" id="genre-results-row"></div>
+            </div>
+
+            <div id="standard-rows">
+                <div class="movie-row-wrapper">
+                    <h3 class="row-title">Тренды недели</h3>
+                    <div class="movie-row" id="trending-row"></div>
+                </div>
+                <div class="movie-row-wrapper">
+                    <h3 class="row-title">Казахстанское кино</h3>
+                    <div class="movie-row" id="kazakh-row"></div>
+                </div>
+                <div class="movie-row-wrapper">
+                    <h3 class="row-title">Лучшее по версии критиков</h3>
+                    <div class="movie-row" id="top-rated-row"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="trailer-container" id="trailer-modal">
+        <div class="video-wrapper">
+            <iframe id="youtube-player" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <i class="fas fa-times fa-2x close-icon" id="close-trailer"></i>
+        </div>
+    </div>
+
+    <!-- ВИДЖЕТ ИИ ПОМОЩНИКА -->
+    <div class="ai-chat-widget">
+        <div id="ai-chat-window" class="ai-chat-window hidden">
+            <div class="ai-chat-header">
+                <h4><i class="fas fa-robot" style="color: var(--accent);"></i> Кино-Ассистент</h4>
+                <i class="fas fa-times close-chat" onclick="toggleAIChat()"></i>
+            </div>
+            <div id="ai-chat-messages" class="ai-chat-messages">
+                <div class="ai-msg-bubble ai-msg-bot">
+                    Привет! 👋 Я ИИ-ассистент MovieTracker. Не знаете, что посмотреть сегодня вечером? Спросите меня!
+                </div>
+            </div>
+            <div class="ai-chat-input-area">
+                <input type="text" id="ai-chat-input" placeholder="Спроси меня..." onkeypress="handleAIEnter(event)">
+                <button onclick="sendAIMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <div class="ai-chat-button" onclick="toggleAIChat()"><i class="fas fa-comment-dots"></i></div>
+    </div>
+   
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p>© 2026 MovieTracker. Проект для сдачи экзамена по предмету Angular JS.</p>
+            </div>
+            <div class="footer-right">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-telegram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="index.js"></script>
+</body>
+</html>
